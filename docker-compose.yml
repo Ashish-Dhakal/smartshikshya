@@ -18,26 +18,31 @@ services:
     container_name: laravel_mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: edu_lms
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - laravel_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: laravel_phpmyadmin
     restart: unless-stopped
+    platform: linux/amd64
     environment:
       PMA_HOST: mysql
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "8081:80"
+      - "8080:80"
     depends_on:
       - mysql
     networks:
